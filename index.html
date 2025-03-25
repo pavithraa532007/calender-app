@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Calendar App</h1>
+    <label for="year">Enter Year:</label>
+    <input type="number" id="year" value="2025">
+    <button onclick="generateCalendar()">Show Calendar</button>
+
+    <div id="calendar"></div>
+
+    <h2>Add Event</h2>
+    <input type="number" id="event-day" placeholder="Day">
+    <input type="number" id="event-month" placeholder="Month">
+    <input type="text" id="event-desc" placeholder="Description">
+    <button onclick="addEvent()">Add Event</button>
+
+    <h2>View Events</h2>
+    <input type="number" id="view-month" placeholder="Month">
+    <button onclick="viewEvents()">View Events</button>
+    <div id="event-list"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    max-width: 500px;
+    margin: auto;
+}
+
+.day {
+    padding: 10px;
+    background-color: lightgray;
+    text-align: center;
+    border: 1px solid black;
+}
+
+input, button {
+    margin: 5px;
+    padding: 8px;
+}
+let events = [];
+
+function getDaysInMonth(month, year) {
+    return new Date(year, month, 0).getDate();
+}
+
+function generateCalendar() {
+    let year = document.getElementById("year").value;
+    let calendarDiv = document.getElementById("calendar");
+    calendarDiv.innerHTML = "";
+
+    for (let month = 1; month <= 12; month++) {
+        let monthDiv = document.createElement("div");
+        monthDiv.innerHTML = `<h3>${new Date(year, month - 1).toLocaleString('default', { month: 'long' })} ${year}</h3>`;
+        
+        let daysInMonth = getDaysInMonth(month, year);
+        for (let day = 1; day <= daysInMonth; day++) {
+            let dayDiv = document.createElement("div");
+            dayDiv.className = "day";
+            dayDiv.textContent = day;
+            monthDiv.appendChild(dayDiv);
+        }
+        
+        calendarDiv.appendChild(monthDiv);
+    }
+}
+
+function addEvent() {
+    let day = document.getElementById("event-day").value;
+    let month = document.getElementById("event-month").value;
+    let desc = document.getElementById("event-desc").value;
+
+    if (!day || !month || !desc) {
+        alert("Please enter all event details!");
+        return;
+    }
+
+    events.push({ day, month, desc });
+    alert("Event added!");
+}
+
+function viewEvents() {
+    let month = document.getElementById("view-month").value;
+    let eventList = document.getElementById("event-list");
+    eventList.innerHTML = "";
+
+    let filteredEvents = events.filter(e => e.month == month);
+    if (filteredEvents.length === 0) {
+        eventList.innerHTML = "<p>No events found.</p>";
+    } else {
+        filteredEvents.forEach(e => {
+            let eventItem = document.createElement("p");
+            eventItem.textContent = `📅 ${e.day}/${e.month}: ${e.desc}`;
+            eventList.appendChild(eventItem);
+        });
+    }
+}
